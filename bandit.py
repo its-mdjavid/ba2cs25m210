@@ -44,14 +44,41 @@ def greedy(bandit, T):
     """Pure greedy: always exploit the current best estimated arm.
     Pulls each arm once to initialise, then always picks argmax(mean)."""
     K = bandit.K
+
+    #estimated mean reward for each arm
+    counts = np.zeros(K)  # Number of times each arm was pulled
+    values = np.zeros(K)  # Estimated mean reward for each arm
+
     #Initialize algorithm dependent variable here
     rewards, regrets = [], []
     cumulative_regret = 0
 
     # Initialise: pull each arm once
     for arm in range(K):
+        reward = bandit.pull(arm)
+        counts[arm] += 1
+        values[arm] = reward  # Initial estimate is just the first reward
 
+        regret = bandit.best_mean - bandit.means[arm]
+        cumulative_regret += regret
+
+        rewards.append(reward)
+        regrets.append(cumulative_regret)
+
+    # Main loop: pull the arm with the highest estimated mean reward
     for t in range(K, T):
+        arm = np.argmax(values)
+        reward = bandit.pull(arm)
+        counts[arm] += 1
+
+        #update mean estimate incrementally
+        values[arm] = (values[arm] * (counts[arm] - 1) + reward) / counts[arm]  # Update estimated mean
+        
+        regret = bandit.best_mean - bandit.means[arm]
+        cumulative_regret += regret
+
+        rewards.append(reward)
+        regrets.append(cumulative_regret)
 
     return np.array(rewards), np.array(regrets)
 
