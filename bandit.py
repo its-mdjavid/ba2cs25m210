@@ -149,11 +149,11 @@ def ucb1(bandit, T):
         counts[arm] += 1
         values[arm] = reward  # Initial estimate is just the first reward
 
-        regret = bandit.best_mean - bandit.means[arm]
+        regret = bandit.best_mean - reward
         cumulative_regret += regret
 
         rewards.append(reward)
-        regrets.append(cumulative_regret)
+        regret = bandit.best_mean - bandit.means[arm]
 
     # Main loop: pull arm with highest UCB index
     for t in range(K, T):
@@ -220,7 +220,7 @@ def run_experiment(means, T, n_runs):
         "Greedy":            greedy,
         "Eps-Greedy(0.1)":   lambda b, T: epsilon_greedy(b, T, epsilon=0.1),
         "UCB1":              ucb1,
-        "KL-UCB":            kl_ucb,
+        #"KL-UCB":            kl_ucb,
         "Thompson Sampling": thompson_sampling,
     }
     results = {name: [] for name in algorithms}
@@ -235,13 +235,34 @@ def run_experiment(means, T, n_runs):
     avg_regrets = {name: np.mean(runs, axis=0) for name, runs in results.items()}
 
     # ── Plot 1: Cumulative Regret Line Chart ──
+    markers = {
+        "Greedy":            "o",
+        "Eps-Greedy(0.1)":   "x",
+        "UCB1":              "^",
+        #"KL-UCB":            "s",
+        "Thompson Sampling": "*",
+}
+    plt.clear_figure()
+    plt.theme("pro")  
+
+    for name, avg_regret in avg_regrets.items():
+        plt.plot(avg_regret, label=name, marker=markers[name])
+
+    plt.title("Cumulative Regret vs Time")
+    plt.xlabel("Time Steps")
+    plt.ylabel("Cumulative Regret")
+
+
+    plt.save_fig("plot1.txt")   # save FIRST
+    plt.show()                  # then display
 
     # ── Plot 2: Final Average Regret Bar Chart ──
+
 
 
 if __name__ == "__main__":
     np.random.seed(42)
     MEANS = [0.1, 0.3, 0.5, 0.6, 0.9]   # 5-armed bandit, best arm = 0.9
     T     = 10000
-    RUNS  = 50
+    n_RUNS  = 50
     run_experiment(MEANS, T, n_RUNS)
