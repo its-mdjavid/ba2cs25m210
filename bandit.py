@@ -252,7 +252,7 @@ def run_experiment(means, T, n_runs):
     plt.xlabel("Time Steps")
     plt.ylabel("Cumulative Regret")
 
-
+    plt.build()
     plt.save_fig(r"C:\Users\mdjav\ba2cs25m210\plot1.txt")   # save FIRST
     plt.show()                  # then display
 
