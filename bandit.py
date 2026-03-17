@@ -253,12 +253,32 @@ def run_experiment(means, T, n_runs):
     plt.ylabel("Cumulative Regret")
 
 
-    plt.save_fig("plot1.txt")   # save FIRST
+    plt.save_fig(r"C:\Users\mdjav\ba2cs25m210\plot1.txt")   # save FIRST
     plt.show()                  # then display
 
     # ── Plot 2: Final Average Regret Bar Chart ──
 
+    plt.clear_figure()
+    plt.theme("pro")    
 
+    # get final regret values
+    labels = []
+    final_values = []
+
+    for name, avg_regret in avg_regrets.items():
+        labels.append(name)
+        final_values.append(avg_regret[-1])
+
+    # create bar chart
+    plt.bar(labels, final_values)
+
+    plt.title("Final Average Regret Comparison (T=10000)")
+    plt.xlabel("Algorithms")
+    plt.ylabel("Final Average Regret")
+
+    plt.build()
+    plt.save_fig(r"C:\Users\mdjav\ba2cs25m210\plot2.txt")  # save FIRST
+    plt.show()
 
 if __name__ == "__main__":
     np.random.seed(42)
